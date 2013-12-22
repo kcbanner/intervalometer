@@ -6,7 +6,6 @@
 #endif
 #include <legacymsp430.h>
 
-
 #if __GNUC__ > 4 || \
   (__GNUC__ == 4 && (__GNUC_MINOR__ > 5 || \
     (__GNUC_MINOR__ == 5 && \
@@ -18,7 +17,11 @@
 int g_timerInterval;
 int g_shutterOpen;
 
+// Time to keep the shutter signal open. Unless the camera is in
+// BULB mode, this doesn't affect the actual shutter speed
+
 #define SHUTTER_LENGTH 100
+
 
 int main(void) {
 
@@ -26,8 +29,10 @@ int main(void) {
 
   WDTCTL = WDTPW + WDTHOLD; 
 
-  BCSCTL1 |= DIVA_3;				// ACLK/8
-  BCSCTL3 |= XCAP_3;				//12.5pF cap- setting for 32768Hz crystal
+  // Set ACLK/8, and select 12.5pF caps for the 32768Hz crystal
+  
+  BCSCTL1 |= DIVA_3;
+  BCSCTL3 |= XCAP_3;
   
   // Set P1.0 (LED1) as output, and set it low
  
@@ -40,7 +45,8 @@ int main(void) {
   P1REN |= BIT1 + BIT2 + BIT3 + BIT4;
   P1OUT |= BIT1 + BIT2 + BIT3 + BIT4;
 
-  // Read in the value of the DIP switches
+  // Read in the value of the DIP switches and set the timer interval
+  // The minimum will be 1 second, and the maximum will be 16
 
   int switchValue = (P1IN & 0x1e) >> 1;
   g_shutterOpen = 0;
