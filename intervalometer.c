@@ -15,7 +15,7 @@
 #endif
 
 int g_timerInterval;
-int g_shutterOpen;
+volatile int g_shutterOpen;
 
 // Time to keep the shutter signal open. Unless the camera is in
 // BULB mode, this doesn't affect the actual shutter speed
